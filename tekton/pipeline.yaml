@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: debug-pipeline
+spec:
+  resources:
+    - name: source-repo
+      type: git
+
+  tasks:
+    - name: build
+      taskRef:
+        name: build-task
+      resources:
+        inputs:
+          - name: source-repo
+            resource: source-repo
+
+    - name: unit-test
+      taskRef:
+        name: unit-test-task
+      resources:
+        inputs:
+          - name: source-repo
+            resource: source-repo
+      runAfter: ['build']
+
+    - name: lint
+      taskRef:
+        name: lint-task
+      resources:
+        inputs:
+          - name: source-repo
+            resource: source-repo
+      runAfter: ['unit-test']
